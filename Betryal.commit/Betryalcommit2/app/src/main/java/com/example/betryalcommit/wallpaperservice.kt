@@ -16,7 +16,7 @@ object wallpaperset {
             WallpaperManager.getInstance(applicationContext);
             try {
                 // passing the drawable file below and modify it as need of uri parsing or do whatever you want
-                wallpaperManager.setResource(R.drawable.peakpx);
+                wallpaperManager.setResource(R.drawable.xyz);
             } catch (e: IOException) {
                 e.printStackTrace();
             }

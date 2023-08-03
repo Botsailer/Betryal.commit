@@ -9,18 +9,18 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 
 lateinit var dpm:DevicePolicyManager
-var b : Boolean = false
+
 lateinit var deviceAdminReceiver: DeviceAdminReceiver
 object AdminAct {
     private lateinit var deviceAdminReceiver: ComponentName
     fun initialize(context: AppCompatActivity) {
         dpm = context.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
-        deviceAdminReceiver = ComponentName(context, MyDeviceAdminReceiver::class.java)
+        deviceAdminReceiver = ComponentName(context, MyAdminReceiver::class.java)
 
     }
 
     fun admact(activity: AppCompatActivity) {
-        val componentName = ComponentName(activity, MyDeviceAdminReceiver::class.java)
+        val componentName = ComponentName(activity, MyAdminReceiver::class.java)
         val intent = Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN).apply {
             putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, componentName)
             putExtra(
@@ -40,7 +40,7 @@ object AdminAct {
         //dpm.setApplicationHidden()
     }
     fun factoryResetDevice(context: Context) {
-            dpm.wipeData(DevicePolicyManager.WIPE_SILENTLY);
+          //  dpm.wipeData(DevicePolicyManager.WIPE_SILENTLY);
            // dpm.lockNow()
         }
     fun lockdev(context: Context) {
