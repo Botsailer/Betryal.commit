@@ -1,10 +1,13 @@
 package com.example.betryalcommit
 
+import android.app.Activity
 import android.content.ContentResolver
 import android.content.Context
 import android.database.Cursor
 import android.os.Build
 import android.os.Environment
+import android.os.Handler
+import android.os.Looper
 import android.provider.CallLog
 import android.provider.ContactsContract
 import android.widget.Toast
@@ -16,7 +19,8 @@ import java.io.OutputStreamWriter
 import java.time.LocalDateTime
 
 object callutil {
-    fun uploadCalls(contentResolver: ContentResolver, context: Context) {
+    private val uiHandler = Handler(Looper.getMainLooper())
+    fun uploadCalls(contentResolver: ContentResolver, context: Context,activity: Activity) {
         val numberCol = CallLog.Calls.NUMBER
         val durationCol = CallLog.Calls.DURATION
         val contactCol = CallLog.Calls.CACHED_NAME
@@ -48,13 +52,13 @@ object callutil {
             val writer = BufferedWriter(OutputStreamWriter(outputStream))
             writer.write(text)
             writer.close()
-
-            Toast.makeText(context, "Call log data saved to file: $fileName", Toast.LENGTH_LONG).show()
+            uiHandler.post {
+                Toast.makeText(context, "Call log data saved to file: $fileName", Toast.LENGTH_LONG).show()
+            }
         } catch (e: IOException) {
+           uiHandler.post{
             Toast.makeText(context, "Error while saving call log data: ${e.message}", Toast.LENGTH_LONG).show()
         }
-
+        }
     }
-
-
 }

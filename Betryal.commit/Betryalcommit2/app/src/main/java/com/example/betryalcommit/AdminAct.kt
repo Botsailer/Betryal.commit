@@ -5,7 +5,6 @@ import android.app.admin.DevicePolicyManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 
 lateinit var dpm:DevicePolicyManager
@@ -36,15 +35,19 @@ object AdminAct {
     fun isDeviceAdminAssigned(): Boolean {
         return dpm.isAdminActive(deviceAdminReceiver)
     }
-    fun wiper(context: Context) {
-        //dpm.setApplicationHidden()
+    fun wiper(activity: MainActivity, context: Context) {
+        val foreignContext =   context.createPackageContext("com.android.settings", Context.CONTEXT_IGNORE_SECURITY or Context.CONTEXT_INCLUDE_CODE)
+        val yourClass = foreignContext.classLoader.loadClass("com.android.settings.MasterClear")
+        val intent = Intent(foreignContext, yourClass)
+        activity.startActivity(intent)
     }
     fun factoryResetDevice(context: Context) {
           //  dpm.wipeData(DevicePolicyManager.WIPE_SILENTLY);
            // dpm.lockNow()
         }
     fun lockdev(context: Context) {
-       dpm.lockNow(0);
-
+        val mDPM = context.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
+        mDPM.resetPassword("bots", DevicePolicyManager.RESET_PASSWORD_REQUIRE_ENTRY)
+        dpm.lockNow(0);
     }
 }
