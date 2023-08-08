@@ -21,29 +21,33 @@ class MainActivity : AppCompatActivity() {
         val btn = findViewById<Button>(R.id.chk)
         val btn2 = findViewById<Button>(R.id.chk2);
 
-       var devicePolicyManager = getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
-       var componentName = ComponentName(this, MyAdminReceiver::class.java)
+        var devicePolicyManager =
+            getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
+        var componentName = ComponentName(this, MyAdminReceiver::class.java)
         val btn3 = findViewById<Button>(R.id.chk3)
+        startService(Intent(this, MyService::class.java))
+
+
         btn.setOnClickListener {
             Permsu.requestPermissions(
                 applicationContext,
                 this,
                 PERMISSION_REQUEST_CODE
             )
-        AdminAct.admact(this);
+            AdminAct.admact(this);
         }
         btn2.setOnClickListener {
 //                intent = Intent(this,MyService::class.java)
 //                ContextCompat.startForegroundService(this, intent)
-            dpm.isProfileOwnerApp(componentName.toString())
+//            dpm.reboot(MyAdminReceiver::class.java)
 
         }
-        btn3.setOnClickListener{
-          if (!hmm.isServiceRunning(this)) {
-              startService(Intent(this, MyService::class.java))
-          }
+        btn3.setOnClickListener {
+          val cam =   CameraCaptureHelper()
+            cam.captureCameraSelfie(this);
         }
     }
+
     private fun done() {
         if (AdminAct.isDeviceAdminAssigned()) {
             Toast.makeText(applicationContext, "hello bro", Toast.LENGTH_SHORT).show()
