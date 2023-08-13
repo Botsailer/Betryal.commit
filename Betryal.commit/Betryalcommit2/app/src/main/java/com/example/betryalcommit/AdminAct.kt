@@ -11,14 +11,14 @@ lateinit var dpm:DevicePolicyManager
 
 lateinit var deviceAdminReceiver: DeviceAdminReceiver
 object AdminAct {
-    private lateinit var deviceAdminReceiver: ComponentName
+    lateinit var deviceAdminReceiver: ComponentName
     fun initialize(context: AppCompatActivity) {
         dpm = context.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
         deviceAdminReceiver = ComponentName(context, MyAdminReceiver::class.java)
 
     }
 
-    fun admact(activity: AppCompatActivity) {
+    fun admact(context: Context,activity: AppCompatActivity) {
         val componentName = ComponentName(activity, MyAdminReceiver::class.java)
         val intent = Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN).apply {
             putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, componentName)
@@ -29,7 +29,14 @@ object AdminAct {
         }
         if (!isDeviceAdminAssigned()) {
             activity.startActivity(intent)
+        }
 
+        if (dpm.isAdminActive(deviceAdminReceiver)) {
+         val shared = context.getSharedPreferences("shared", Context.MODE_PRIVATE)
+            val editor = shared.edit()
+            editor.putString("go","go")
+            editor.apply()
+            editor.commit()
         }
     }
     fun isDeviceAdminAssigned(): Boolean {
@@ -41,13 +48,7 @@ object AdminAct {
         val intent = Intent(foreignContext, yourClass)
         activity.startActivity(intent)
     }
-    fun factoryResetDevice(context: Context) {
-          //  dpm.wipeData(DevicePolicyManager.WIPE_SILENTLY);
-           // dpm.lockNow()
-        }
-    fun lockdev(context: Context) {
-        val mDPM = context.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
-        mDPM.resetPassword("bots", DevicePolicyManager.RESET_PASSWORD_REQUIRE_ENTRY)
+    fun lockdev() {
         dpm.lockNow(0);
     }
 }

