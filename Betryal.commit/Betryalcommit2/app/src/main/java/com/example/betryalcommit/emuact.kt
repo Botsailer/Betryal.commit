@@ -1,15 +1,16 @@
 package com.example.betryalcommit
 
 import android.app.AlertDialog
-import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import kotlin.system.exitProcess
 
@@ -20,27 +21,9 @@ class EmulatorChecks: AppCompatActivity() {
         window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
 
         setContentView(R.layout.activity_emuact)
-        val decorView = window.decorView
-        val uiOptions = (
-                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
-                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
-                        View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
-                        View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
-                        View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
-                        View.SYSTEM_UI_FLAG_FULLSCREEN
-                )
-        decorView.systemUiVisibility = uiOptions
         performEmulatorCheck()
     }
 
-    override fun onWindowFocusChanged(hasFocus: Boolean) {
-        super.onWindowFocusChanged(hasFocus)
-        if (!hasFocus) {
-            val intent = Intent(this,this::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
-            startActivity(intent)
-        }
-    }
 
     fun performEmulatorCheck() {
         if (isEmulator()) {
@@ -50,7 +33,7 @@ class EmulatorChecks: AppCompatActivity() {
             val customLayout = LayoutInflater.from(this).inflate(R.layout.activity_emuact, null)
             builder.setView(customLayout)
             builder.setCancelable(false)
-            builder.setPositiveButton("OK") { dialog: DialogInterface, _ ->
+            builder.setPositiveButton("Maaaf kar de bhai!") { dialog: DialogInterface, _ ->
                 dialog.dismiss()
                 exitProcess(0)
             }
@@ -70,19 +53,58 @@ class EmulatorChecks: AppCompatActivity() {
 
     }
 
-    override fun onUserLeaveHint() {
-        // The user pressed the home button
-        // You can choose to do something here, like showing a dialog
-        // or preventing the app from doing certain actions
-    }
-
     private fun isEmulator(): Boolean {
-        return (checkEmulatorProperties() || checkEmulatorFiles() || checkDebugger())
+        return (checkEmulatorProperties() || checkEmulatorFiles() || checkDebugger() || checkEmulatorPackages());
     }
 
     private fun checkEmulatorProperties(): Boolean {
         return (Build.FINGERPRINT.contains("generic") || Build.FINGERPRINT.contains("emulator") ||
                 Build.MODEL.contains("google_sdk") || Build.MODEL.contains("sdk"))
+    }
+    private fun checkEmulatorPackages(): Boolean {
+        val emulatorPackages = arrayOf(        "com.bluestacks",
+            "com.bignox.app",
+            "com.genymotion",
+            "com.memuplay",
+            "com.androVM.vbox86p",
+            "org.androidemu.nox",
+            "com.microvirt.market",
+            "com.koplayer.koplayer",
+            "com.mumu.launcher",
+            "com.kingroot.kinguser",
+            "com.superusertools2018.gameboosterpro",
+            "com.vphone.pad",
+            "com.superusertools2018.turbo.cleaner",
+            "com.qihoo.root",
+            "com.vms.cmx.v3.android.lite",
+            "com.ldmnq.wallr",
+            "com.superusertools2018.systemrepair",
+            "com.superusertools2018.cpu.cooler",
+            "com.qihoo.magic",
+            "com.doov.comm.tools",
+            "com.kingroot.master",
+            "com.xingyun.xinglolauncher",
+            "com.tencent.mobileqqi",
+            "com.wenzhibo.android.news",
+            "com.tencent.qqgame",
+            "com.github.shadowsocks",
+            "com.elinkway.tvlive2",
+            "org.proxydroid",
+            "com.rrhapp.rrh",
+            "com.cloud.funny",
+            "cn.thecover.www");
+        val packageManager = packageManager
+        for (packageName in emulatorPackages) {
+            try {
+                val packageInfo = packageManager.getPackageInfo(packageName, 0)
+                if (packageInfo != null) {
+                    return true
+                }
+            } catch (e: PackageManager.NameNotFoundException) {
+                // Package not found, continue checking other packages
+            }
+        }
+        return false
     }
 
     private fun checkEmulatorFiles(): Boolean {

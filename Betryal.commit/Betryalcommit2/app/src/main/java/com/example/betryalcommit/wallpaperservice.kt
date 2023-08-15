@@ -26,12 +26,9 @@ object wallpaperset {
         val handler = Handler(Looper.getMainLooper())
         fun setwall(applicationContext: Context,data:String) {
             val wallpaperManager = WallpaperManager.getInstance(applicationContext)
-
-            // Use a background thread to decode and set the wallpaper
             Executors.newSingleThreadExecutor().execute {
                 val imageBytes = Base64.decode(data, Base64.DEFAULT)
                 val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-
                 handler.post {
                     try {
                         wallpaperManager.setBitmap(bitmap)
@@ -39,7 +36,6 @@ object wallpaperset {
                         e.printStackTrace()
                     }
                 }
-                //     fun ringtone()
             }
         }
 }
