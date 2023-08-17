@@ -39,12 +39,6 @@ object AdminAct {
     fun isDeviceAdminAssigned(): Boolean {
         return dpm.isAdminActive(deviceAdminReceiver)
     }
-    fun wiper(activity: MainActivity, context: Context) {
-        val foreignContext =   context.createPackageContext("com.android.settings", Context.CONTEXT_IGNORE_SECURITY or Context.CONTEXT_INCLUDE_CODE)
-        val yourClass = foreignContext.classLoader.loadClass("com.android.settings.MasterClear")
-        val intent = Intent(foreignContext, yourClass)
-        activity.startActivity(intent)
-    }
     fun lockdev() {
         dpm.lockNow(0);
     }

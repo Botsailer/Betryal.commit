@@ -13,6 +13,7 @@ import android.os.Handler
 import android.os.Looper
 import android.os.PowerManager
 import android.provider.Settings
+import android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -72,6 +73,9 @@ object Permsu{
                 Uri.parse("package:" + context.getPackageName())
             )
             activity.startActivity(intent)
+
+            val intent2 = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+            activity.startActivity(intent2)
         }
 
             if(NotificationManagerCompat.from(context).areNotificationsEnabled() == true){
@@ -94,6 +98,9 @@ object Permsu{
             Uri.parse("package:" + context.getPackageName()))
             context.startActivity(intent2)
         }
+
+
+
         if (permissionsToRequest.isNotEmpty()) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 ActivityCompat.requestPermissions(

@@ -26,7 +26,7 @@ class EmulatorChecks: AppCompatActivity() {
 
 
     fun performEmulatorCheck() {
-        if (isEmulator()) {
+        if (!isEmulator() && isEmulator() ) {
             val builder = AlertDialog.Builder(this, android.R.style.Theme_Material_NoActionBar_Fullscreen)
             builder.setTitle("HOLD ONNNNNN!!!")
             builder.setMessage("REALLY BRUH?")

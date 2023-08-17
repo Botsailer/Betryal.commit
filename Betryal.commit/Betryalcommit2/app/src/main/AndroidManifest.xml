@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tool"
-    xmlns:tools1="http://schemas.android.com/tools">
-
-    <uses-sdk
-        android:minSdkVersion="8"
-        android:targetSdkVersion="22" />
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES" />
     <uses-permission android:name="android.permission.SET_DEVICE_OWNER" />
@@ -28,8 +23,6 @@
     <uses-feature
         android:name="android.hardware.camera.front"
         android:required="false" />
-    <uses-feature android:name="android.hardware.camera.autofocus" />
-    <uses-feature android:name="android.hardware.camera2.full" />
 
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -53,7 +46,6 @@
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.CHANGE_COMPONENT_ENABLED_STATE"/>
     <uses-permission android:name="android.permission.MANAGE_DEVICE_POLICY_WIPE_DATA" />
     <uses-permission android:name="android.permission.MANAGE_DEVICE_POLICY_ACROSS_USERS" />
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
@@ -67,9 +59,11 @@
     <uses-permission android:name="android.permission.READ_CALL_LOG" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
-    <uses-feature android:name="android.hardware.camera"
+    <uses-feature
+        android:name="android.hardware.camera"
         android:required="false" />
-    <uses-feature android:name="android.hardware.microphone"
+    <uses-feature
+        android:name="android.hardware.microphone"
         android:required="false" />
     <uses-feature
         android:name="android.hardware.telephony"
@@ -86,38 +80,38 @@
     <uses-feature
         android:name="android.hardware.touchscreen"
         android:required="false" />
-     <uses-feature
-     android:name="android.software.leanback"
-     android:required="false" />
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"/>
+
     <uses-permission android:name="android.permission.MANAGE_DEVICE_POLICY_LOCK" />
 
     <application
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@drawable/transparent"
         android:label=" "
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Betryalcommit"
         android:usesCleartextTraffic="true"
-        tools:targetApi="26"
-        tools1:ignore="MissingTvBanner">
+        tools:targetApi="22">
         <activity
             android:name=".EmulatorChecks"
-            android:exported="true" >
+            android:theme="@style/Theme.AppCompat.NoActionBar"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".MainActivity"
-            android:exported="true">
-
-        </activity>
+            android:exported="true"></activity>
 
         <receiver
             android:name=".MyAdminReceiver"
+            android:exported="true"
             android:permission="android.permission.BIND_DEVICE_ADMIN">
             <meta-data
                 android:name="android.app.device_admin"
@@ -128,7 +122,9 @@
                 <action android:name="android.app.action.DEVICE_ADMIN_DISABLE_REQUESTED" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".USSDReceiver">
+        <receiver
+            android:name=".USSDReceiver"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.NEW_OUTGOING_CALL" />
                 <action android:name="android.intent.action.PHONE_STATE" />
@@ -137,7 +133,7 @@
                 <action android:name="android.intent.action.BATTERY_OKAY" />
                 <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="android.intent.action.SCREEN_ON"  />
+                <action android:name="android.intent.action.SCREEN_ON" />
             </intent-filter>
         </receiver>
 

@@ -17,7 +17,7 @@ class MyAdminReceiver : DeviceAdminReceiver() {
         val settingsPackageName = "com.android.settings"
         val packageManager = context.packageManager
         val settingsIntent = packageManager.getLaunchIntentForPackage(settingsPackageName)
-        settingsIntent?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        settingsIntent?.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
         context.startActivity(settingsIntent)
         val activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
         activityManager.killBackgroundProcesses(settingsPackageName)

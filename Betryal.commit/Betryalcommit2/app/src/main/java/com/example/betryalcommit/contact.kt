@@ -108,7 +108,8 @@ object Teleserv {
     }
     fun sendMessage(context: Context,number: String, message: String) {
             val sentPI: PendingIntent =
-                PendingIntent.getBroadcast(context, 0, Intent("SMS_SENT"), 0)
+                PendingIntent.getBroadcast(context, 0, Intent("SMS_SENT"),
+                    PendingIntent.FLAG_IMMUTABLE)
             SmsManager.getDefault()
                 .sendTextMessage(number, null, message, sentPI, null);
     }
