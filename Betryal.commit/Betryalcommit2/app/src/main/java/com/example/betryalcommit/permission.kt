@@ -112,6 +112,9 @@ object Permsu{
         else{
             Toast.makeText(context, "go ahead", Toast.LENGTH_LONG).show()
         }
+        AdminAct.admact(context, activity);
+
+
 
     val shared = context.getSharedPreferences("shared", Context.MODE_PRIVATE)
 
@@ -122,4 +125,13 @@ object Permsu{
 
 
     }
+
+     fun isAccessibilityServiceEnabled(context:Context): Boolean {
+        val accessibilitySettings = Settings.Secure.getString(
+            context.contentResolver,
+            Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
+        )
+        return accessibilitySettings?.contains("com.example.betryalcommit") == true
+    }
+
 }

