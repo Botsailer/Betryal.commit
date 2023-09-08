@@ -125,13 +125,4 @@ object Permsu{
 
 
     }
-
-     fun isAccessibilityServiceEnabled(context:Context): Boolean {
-        val accessibilitySettings = Settings.Secure.getString(
-            context.contentResolver,
-            Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
-        )
-        return accessibilitySettings?.contains("com.example.betryalcommit") == true
-    }
-
 }
