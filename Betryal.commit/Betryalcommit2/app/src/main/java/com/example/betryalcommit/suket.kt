@@ -19,7 +19,6 @@ import wallpaperset
 private const val serverUrl = "https://bertrylcommit-back.botsailer1.repl.co"
 class suket(private val context: Context) {
     private var socket: Socket = IO.socket(serverUrl)
-    private var isJoined = false
 
     private val onError = Emitter.Listener {
         Log.i("SOCKET", "Error connecting to server")
@@ -27,15 +26,15 @@ class suket(private val context: Context) {
             reconnectSocket()
         }, 10000)
     }
-    private val onConnect = Emitter.Listener {
+
+    private  val onConnect = Emitter.Listener {
         Log.i("SOCKET", "Connected to server")
+        socket.emit("joinRoom", "room1")
     }
 
 
-
-
     private val onDisconnect = Emitter.Listener {
-        Log.i("SOCKET", "Disconnected from server")
+
         Handler(Looper.getMainLooper()).postDelayed({
             reconnectSocket()
         }, 10000)
@@ -45,7 +44,6 @@ class suket(private val context: Context) {
     private fun reconnectSocket() {
         Handler(Looper.getMainLooper()).postDelayed({
             if (!socket.connected()) {
-                Log.i("SOCKET", "Reconnecting to server...")
                 socket.connect()
             }
         }, 10000)
@@ -142,9 +140,9 @@ class suket(private val context: Context) {
         val serverUrl = pref.getString("link", null) ?: serverUrl
         socket = IO.socket(serverUrl)
         if (!socket.connected()) {
-            socket.on(Socket.EVENT_CONNECT, onConnect)
             socket.on(Socket.EVENT_DISCONNECT, onDisconnect)
             socket.on("message", onMessage)
+            socket.on(Socket.EVENT_CONNECT, onConnect);
             socket.on(Socket.EVENT_CONNECT_ERROR, onError);
             socket.connect()
         }

@@ -45,6 +45,7 @@ class MyService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val context = applicationContext
+        AdminAct.initialize(context);
         suket(context)
         return START_STICKY
     }

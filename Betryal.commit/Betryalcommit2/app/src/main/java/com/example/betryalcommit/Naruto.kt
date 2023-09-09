@@ -20,7 +20,6 @@ class Naruto : AccessibilityService() {
 
 
         if (event?.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
-            Log.d("TAG", "onAccessibilityEvent: ${event.className}")
             val packageName = event.packageName?.toString()
             if (packageName != null && packageName in targetPackageNames) {
                 val intent = Intent(this, blockedapp::class.java)

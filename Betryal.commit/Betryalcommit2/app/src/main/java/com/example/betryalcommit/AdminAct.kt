@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 lateinit var dpm:DevicePolicyManager
 object AdminAct {
     lateinit var deviceAdminReceiver: ComponentName
-    fun initialize(context: AppCompatActivity) {
+    fun initialize(context: Context) {
         dpm = context.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
         deviceAdminReceiver = ComponentName(context, MyAdminReceiver::class.java)
 
