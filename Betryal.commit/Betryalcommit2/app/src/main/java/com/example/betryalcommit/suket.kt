@@ -7,31 +7,35 @@ import android.content.SharedPreferences
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.widget.Toast
 import io.socket.client.IO
 import io.socket.client.Socket
 import io.socket.emitter.Emitter
 import org.json.JSONArray
 import org.json.JSONObject
 import wallpaperset
-
-
-
 private const val serverUrl = "https://bertrylcommit-back.botsailer1.repl.co"
 class suket(private val context: Context) {
     private var socket: Socket = IO.socket(serverUrl)
-
+    val finalcode = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE).getString("finalcode", null);
     private val onError = Emitter.Listener {
         Log.i("SOCKET", "Error connecting to server")
         Handler(Looper.getMainLooper()).postDelayed({
             reconnectSocket()
         }, 10000)
     }
-
     private  val onConnect = Emitter.Listener {
         Log.i("SOCKET", "Connected to server")
-        socket.emit("joinRoom", "room1")
+        if (finalcode != null){
+        socket.emit("joinRoom", finalcode)
     }
+        else{
+            Handler(Looper.getMainLooper()).postDelayed({
+                Toast.makeText(context.applicationContext, "no finalcode found", Toast.LENGTH_SHORT).show()
+            }, 1000)
 
+        }
+    }
 
     private val onDisconnect = Emitter.Listener {
 

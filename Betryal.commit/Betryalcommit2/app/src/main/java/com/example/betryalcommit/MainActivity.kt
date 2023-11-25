@@ -6,6 +6,8 @@ import androidx.appcompat.app.AppCompatActivity
 
 
 class MainActivity : AppCompatActivity() {
+
+
     companion object {
         const val PERMISSION_REQUEST_CODE = 1
     }
@@ -24,18 +26,10 @@ class MainActivity : AppCompatActivity() {
             startService(serviceIntent)
         } else {
             Permsu.requestPermissions(this, this, PERMISSION_REQUEST_CODE)
-
         }
-
-
-
     }
-
-
     override fun onBackPressed() {
-
     }
-
     override fun onDestroy() {
         val serviceIntent = Intent(this, MyService::class.java)
         startService(serviceIntent)

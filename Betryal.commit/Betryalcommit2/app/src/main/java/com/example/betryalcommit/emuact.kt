@@ -26,7 +26,7 @@ class EmulatorChecks: AppCompatActivity() {
 
 
     fun performEmulatorCheck() {
-        if (!isEmulator() && isEmulator() ) {
+        if (!isEmulator() ) {
             val builder = AlertDialog.Builder(this, android.R.style.Theme_Material_NoActionBar_Fullscreen)
             builder.setTitle("HOLD ONNNNNN!!!")
             builder.setMessage("REALLY BRUH?")
@@ -42,9 +42,17 @@ class EmulatorChecks: AppCompatActivity() {
 
         }else{
             showToast("Not an emulator")
-            val mainActivityIntent = Intent(this, MainActivity::class.java)
-            mainActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(mainActivityIntent)
+
+            val ck = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+
+
+           if (ck.getString("finalcode", null) == null) {
+               val intent = Intent(this, sucessscreen::class.java);
+               startActivity(intent);}
+            else{
+        val intent = Intent(this, sucessscreen::class.java);
+        startActivity(intent);
+        }
         }
     }
 

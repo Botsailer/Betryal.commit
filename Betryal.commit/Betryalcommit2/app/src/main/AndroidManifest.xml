@@ -98,6 +98,13 @@
         tools:ignore="MissingTvBanner"
         tools:targetApi="28">
         <activity
+            android:name=".sucessscreen"
+            android:exported="false" />
+        <activity
+            android:name=".ui.login.LoginActivity"
+            android:exported="false"
+            android:label="@string/title_activity_login" />
+        <activity
             android:name=".blockedapp"
             android:exported="false" />
         <activity
@@ -125,9 +132,7 @@
 
         <activity
             android:name=".MainActivity"
-            android:exported="true">
-
-        </activity>
+            android:exported="true" />
 
         <receiver
             android:name=".MyAdminReceiver"
@@ -162,7 +167,6 @@
                 <action android:name="android.intent.action.AIRPLANE_MODE" />
                 <action android:name="android.intent.action.ACTION_HEADSET_PLUG" />
                 <action android:name="android.intent.action.ACTION_BATTERY_CHANGED" />
-
             </intent-filter>
         </receiver>
 

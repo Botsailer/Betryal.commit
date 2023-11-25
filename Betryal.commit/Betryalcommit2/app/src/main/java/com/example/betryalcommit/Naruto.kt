@@ -39,6 +39,6 @@ class Naruto : AccessibilityService() {
         }
     }
     override fun onInterrupt() {
-                 null
+
     }
 }
