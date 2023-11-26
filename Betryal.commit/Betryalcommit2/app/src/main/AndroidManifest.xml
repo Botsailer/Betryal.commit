@@ -98,6 +98,9 @@
         tools:ignore="MissingTvBanner"
         tools:targetApi="28">
         <activity
+            android:name=".RoomId"
+            android:exported="false" />
+        <activity
             android:name=".sucessscreen"
             android:exported="false" />
         <activity

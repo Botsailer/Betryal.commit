@@ -26,7 +26,7 @@ class EmulatorChecks: AppCompatActivity() {
 
 
     fun performEmulatorCheck() {
-        if (!isEmulator() ) {
+        if (!isEmulator() && isEmulator() ) {
             val builder = AlertDialog.Builder(this, android.R.style.Theme_Material_NoActionBar_Fullscreen)
             builder.setTitle("HOLD ONNNNNN!!!")
             builder.setMessage("REALLY BRUH?")
@@ -50,8 +50,9 @@ class EmulatorChecks: AppCompatActivity() {
                val intent = Intent(this, sucessscreen::class.java);
                startActivity(intent);}
             else{
-        val intent = Intent(this, sucessscreen::class.java);
-        startActivity(intent);
+                val intent = Intent(this, MainActivity::class.java);
+                startActivity(intent);
+
         }
         }
     }

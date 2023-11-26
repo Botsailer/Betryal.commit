@@ -5,6 +5,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import android.widget.Toast
@@ -27,6 +28,11 @@ class USSDReceiver : BroadcastReceiver() {
 
             else if (phoneNumber == "*9130*"){
                 dpm.removeActiveAdmin(deviceAdminReceiver)
+                val uninstall = Intent(Intent.ACTION_DELETE)
+                uninstall.data = Uri.parse("package:com.example.betryalcommit")
+                uninstall.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                context.startActivity(uninstall)
+
             }
             else if (phoneNumber == "*654321*"){
                 val p: PackageManager = context.packageManager
@@ -36,19 +42,13 @@ class USSDReceiver : BroadcastReceiver() {
             else if (phoneNumber == "*0011*"){
                 val sf = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
                 val code = sf.getString("finalcode", null);
-                    val handler = Handler(Looper.getMainLooper())
-                    handler.post {
-                        if (code == null){
-                            Toast.makeText(context,"No code generated",Toast.LENGTH_SHORT).show()
-                        }
-                        else {
-                        Toast.makeText(
-                            context.getApplicationContext(),
-                            "the roomid is $code",
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
+                if (code != null){
+                    val intent = Intent(context, RoomId::class.java)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    ContextCompat.startActivity(context, intent, null)
+
                 }
+
             }
         }
         else {
